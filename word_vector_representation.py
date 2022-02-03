@@ -8,21 +8,22 @@ import numpy as np
 
 class CBOW(nn.Module):
 
-    def __init__(self, vocab_size, hidden_size, context_size):
-        super(CBOW, self).__init__()
+    def __init__(self, vocab_size, hidden_size, context_size, device):
+        super().__init__()
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
-        self.layer1 = nn.Linear(vocab_size, hidden_size)
-        self.relu1 = nn.ReLU()
-        self.layer2 = nn.Linear(hidden_size, vocab_size)
+        self.context_size = context_size
+        self.device = device
+        
+        self.embeddings = nn.Embedding(vocab_size, hidden_size)
+        self.output = nn.Linear(hidden_size, vocab_size)
         
 
-    def forward(self, inputs):
-        one_hot = torch.zeros((len(inputs),vocab_size)).to(device)
-        one_hot[np.repeat([i for i in range(len(inputs))],context_size*2),inputs.view(-1)] = 1/(context_size*2)      
-        out = self.layer1(one_hot)
-        out = self.relu1(out)
-        out = self.layer2(out)
+    def forward(self, inputs):        
+        
+        out = torch.sum(self.embeddings(inputs), dim=1)
+        out = self.output(out)
+        
         return out
     
 
@@ -61,9 +62,9 @@ if __name__ == '__main__':
     
     with open('data/nytimes_news_articles.txt', encoding='utf8') as f:
         lines = f.read().splitlines()
+
+    lines = lines[0:50000]
     
-    lines = lines[0:20000]
-    stopwords_dict = stopwords.words('english')
     articles = []
     num_articles = 0
     for line in lines:
@@ -77,7 +78,7 @@ if __name__ == '__main__':
         else:
             for word in line.split(' '):
                 clean_word = re.sub('[^A-Za-z0-9]+', '', word).lower() 
-                if clean_word in stopwords_dict or clean_word == '' or clean_word == ' ':
+                if clean_word == '' or clean_word == ' ':
                     continue
                 else:
                     articles[num_articles-1] += clean_word+' '
@@ -105,14 +106,14 @@ if __name__ == '__main__':
             data.append((context, target))
 
     device = ('cuda' if torch.cuda.is_available() else 'cpu')
-    hidden_size = 128    
-    model = CBOW(vocab_size, hidden_size, context_size)
+    hidden_size = 2**10
+    model = CBOW(vocab_size, hidden_size, context_size, device)
     model = model.to(device)
     
     criterion  = nn.CrossEntropyLoss()
-    opt = torch.optim.Adam(model.parameters())
+    opt = torch.optim.Adam(model.parameters(), lr=0.001)
     
-    epochs = 200
+    epochs = 25
     train_loss = []
     train_acc = []
     for epoch in range(epochs):
@@ -125,14 +126,14 @@ if __name__ == '__main__':
         correct = 0
     
         model.train()
-        batch_size = 2**10
+        batch_size = 2**12
         batches = shuffle_batches(data, batch_size = batch_size)
-        
-        for x, y in batches:
 
+        for x, y in batches:
+            
             x = x.to(device)
             y = y.to(device)
-            
+    
             opt.zero_grad()
             out = model(x)
             loss = criterion(out, y.view(-1))
@@ -152,51 +153,29 @@ if __name__ == '__main__':
         print(epoch, train_loss[-1], train_acc[-1], end)
     
     
-    # embeddings1 = model.layer1.weight
-    # embeddings2 = model.layer2.weight
+    embeddings = model.embeddings.weight.cpu().detach().numpy()
 
-    # embeddings = (embeddings2 + torch.transpose(embeddings1,1,0))/2
-    # embeddings = torch.transpose(embeddings1,1,0)
-    # embeddings = embeddings2
-    # embeddings = embeddings.cpu().detach().numpy()
+    # v,c = np.unique(' '.join(articles).split(' '),return_counts=True)
+    # sorted_v = [v for _, v in sorted(zip(c, v))]
+    # sorted_v[-200:]
     
-    # def find_nearest_analogy(a0,b0,a1,embeddings):
-        
-    #     item2 = b0 - a0 + a1
-        
-    #     cossim_add = []
-    #     for i in range(len(embeddings)):
-    #         item1 = embeddings[i]
-            
-    #         num = np.matmul(item2, item1.transpose())
-    #         d1 = np.sqrt(np.matmul(item2, item2.transpose()))
-    #         d2 = np.sqrt(np.matmul(item1, item1.transpose()))
-    #         cossim_add.append(num/d1/d2)
-    #     largest_indices = np.argsort(cossim_add)[-10:]
-    #     top_5_words1 = [ix_to_word[i] for i in largest_indices]
-    #     top_5_cossim1 = np.array(cossim_add)[largest_indices]
-    #     for i in range(10):
-    #         print(top_5_words1[i], round(top_5_cossim1[i],3))         
-        
-    #     return b1s
-   
-    # a0 = embeddings[word_to_ix['smart']]
-    # b0 = embeddings[word_to_ix['smarter']]
-    # a1 = embeddings[word_to_ix['small']]
-
-    # word1_vec = b0
+    test_words = ['is','he','god','found','your','house']
     
-    # cossim1 = []
-    # for i in range(len(embeddings)):
-    #     compare_word = embeddings[i]
-    #     ab = np.matmul(compare_word, word1_vec.transpose())
-    #     a = np.sqrt(np.matmul(compare_word, compare_word.transpose()))
-    #     b = np.sqrt(np.matmul(word1_vec, word1_vec.transpose()))
-    #     cossim1.append(ab/(a*b))
-    # largest_indices = np.argsort(cossim1)[-10:]
-    # top_5_words1 = [ix_to_word[i] for i in largest_indices]
-    # top_5_cossim1 = np.array(cossim1)[largest_indices]
-    # for i in range(10):
-    #     print(top_5_words1[i], round(top_5_cossim1[i],3))
+    
+    for word in test_words:
+        word1_vec = embeddings[word_to_ix[word]]
         
-        
+        cossim1 = []
+        for i in range(len(embeddings)):
+            compare_word = embeddings[i]
+            ab = np.matmul(compare_word, word1_vec.transpose())
+            a = np.sqrt(np.matmul(compare_word, compare_word.transpose()))
+            b = np.sqrt(np.matmul(word1_vec, word1_vec.transpose()))
+            cossim1.append(ab/(a*b))
+        largest_indices = np.argsort(cossim1)[-11:]
+        top_5_words1 = [ix_to_word[i] for i in largest_indices]
+        top_5_cossim1 = np.array(cossim1)[largest_indices]
+        print(word)
+        for i in range(10):
+            print(top_5_words1[i], round(top_5_cossim1[i],3))
+        print()
