@@ -3,73 +3,73 @@ Fit a Continous Bag of Words model on the NY Times Corpus.
 Top 10 similarities 
 
 is
-* adversarial 0.12
-* bling 0.123
-* strife 0.125
-* woodwinds 0.125
-* ushers 0.126
-* were 0.127
-* taraghi 0.133
-* hitfixs 0.134
-* yellowstone 0.136
-* was 0.159
+has 0.303
+makes 0.312
+seems 0.314
+requires 0.32
+appears 0.324
+remains 0.333
+represents 0.344
+are 0.389
+isnt 0.448
+was 0.524
 
 he
-* onyx 0.126
-* wildin 0.126
-* culpable 0.128
-* matsui 0.128
-* improbable 0.129
-* she 0.132
-* carnegie 0.137
-* coli 0.138
-* avian 0.141
-* mccoubrey 0.144
+saadeldin 0.342
+latrobe 0.342
+zoumas 0.343
+they 0.343
+i 0.357
+it 0.358
+iliana 0.361
+khairullah 0.362
+gberdao 0.364
+she 0.638
 
 god
-* gurumayi 0.123
-* nambula 0.125
-* burnished 0.128
-* sabbatarian 0.129
-* noahs 0.129
-* anastasiya 0.129
-* t20 0.138
-* mysteriously 0.141
-* corning 0.146
-* jaw 0.149
+nurse 0.266
+destin 0.268
+voyeur 0.27
+tourbest 0.271
+boy 0.273
+caliphate 0.276
+gosh 0.277
+jure 0.283
+puna 0.294
+deace 0.298
 
 found
-* flashtattoo 0.121
-* expunged 0.121
-* rid 0.122
-* ask 0.123
-* reveal 0.123
-* tracked 0.125
-* incurring 0.127
-* conducted 0.131
-* correlation 0.135
-* reinforces 0.135
+describes 0.303
+revealed 0.308
+uncovered 0.325
+believed 0.333
+ruled 0.333
+concluded 0.343
+finding 0.35
+acknowledged 0.368
+discovered 0.422
+find 0.425
 
 your
-* 9850 0.117
-* schneiderman 0.118
-* heffernans 0.119
-* gemmells 0.119
-* cirque 0.124
-* friendlier 0.127
-* captivity 0.128
-* tomb 0.128
-* mushy 0.129
-* nic 0.131
+brillants 0.248
+anticastro 0.248
+bluegrassfluent 0.26
+the 0.273
+peoples 0.279
+his 0.454
+her 0.475
+our 0.476
+their 0.482
+my 0.644
 
 house
-* superiors 0.122
-* momentum 0.123
-* mosque 0.125
-* ratesetting 0.128
-* twisting 0.135
-* longview 0.136
-* upmarket 0.136
-* 3s 0.137
-* tsn 0.139
-* test 0.149
+guanche 0.299
+tub 0.301
+rotunda 0.303
+thirddeadliest 0.304
+church 0.31
+cfdas 0.318
+foxaffiliated 0.319
+exdemocrats 0.333
+mansion 0.364
+houses 0.401
