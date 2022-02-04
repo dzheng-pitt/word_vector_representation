@@ -62,8 +62,6 @@ if __name__ == '__main__':
     
     with open('data/nytimes_news_articles.txt', encoding='utf8') as f:
         lines = f.read().splitlines()
-
-    lines = lines[0:50000]
     
     articles = []
     num_articles = 0
@@ -106,14 +104,14 @@ if __name__ == '__main__':
             data.append((context, target))
 
     device = ('cuda' if torch.cuda.is_available() else 'cpu')
-    hidden_size = 2**10
+    hidden_size = 256
     model = CBOW(vocab_size, hidden_size, context_size, device)
     model = model.to(device)
     
     criterion  = nn.CrossEntropyLoss()
-    opt = torch.optim.Adam(model.parameters(), lr=0.001)
+    opt = torch.optim.Adam(model.parameters())
     
-    epochs = 25
+    epochs = 200
     train_loss = []
     train_acc = []
     for epoch in range(epochs):
@@ -126,7 +124,7 @@ if __name__ == '__main__':
         correct = 0
     
         model.train()
-        batch_size = 2**12
+        batch_size = 2**10
         batches = shuffle_batches(data, batch_size = batch_size)
 
         for x, y in batches:
